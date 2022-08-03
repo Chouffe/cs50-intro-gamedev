@@ -18,6 +18,8 @@
 local push = require 'lib/push'
 local Class = require 'lib/class'
 local CONFIG = require 'config'
+local gamestate = require 'gamestate'
+local util_math = require 'util/math'
 
 require 'entities/Bird'
 require 'entities/PipePair'
@@ -35,19 +37,6 @@ local function load_assets()
     }
 end
 
-local function get_initial_gamestate(assets)
-    return {
-        ['last_y'] = 200,
-        ['entities'] = {
-            ['pipe_pairs'] = {},
-            ['bird'] = Bird(assets.images.bird),
-        },
-        ['background_scroll'] = 0,
-        ['ground_scroll'] = 0,
-        ['spawn_pipe_timer'] = 0,
-    }
-end
-
 local function reset_keys_pressed()
     love.keyboard.keysPressed = {}
 end
@@ -57,8 +46,7 @@ function love.load()
     love.assets = load_assets()
 
     -- Load the gamestate
-    -- love.gamestate = gamestate.get_initial_gamestate()
-    love.gamestate = get_initial_gamestate(love.assets)
+    love.gamestate = gamestate.get_initial_gamestate(love.assets)
 
     -- initialize our nearest-neighbor filter
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -100,10 +88,17 @@ function love.update(dt)
     love.gamestate.entities.bird:update(dt)
     love.gamestate.spawn_pipe_timer = love.gamestate.spawn_pipe_timer + dt
 
-    -- MOVE the spawn rate in config
     if love.gamestate.spawn_pipe_timer > 2 then
-        -- TODO: keep track of the last_y
-        table.insert(love.gamestate.entities.pipe_pairs, PipePair(love.assets.images.pipe, love.gamestate.last_y))
+        local pipe_pair_y = util_math.clamp(
+            love.gamestate.last_y + math.random(-25, 25),
+            15,
+            CONFIG.VIRTUAL_HEIGHT
+        )
+        table.insert(
+            love.gamestate.entities.pipe_pairs,
+            PipePair(love.assets.images.pipe, pipe_pair_y)
+        )
+        love.gamestate.last_y = pipe_pair_y
         love.gamestate.spawn_pipe_timer = 0
     end
 
