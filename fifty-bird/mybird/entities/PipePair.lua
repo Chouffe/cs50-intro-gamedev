@@ -16,11 +16,17 @@ function PipePair:init(image, y)
         ['bottom'] = Pipe(image, 'bottom', y),
         ['top'] = Pipe(image, 'top', y - CONFIG.PIPE_GAP),
     }
+    -- Can the entity be deallocated?
+    self.remove = false
 end
 
 function PipePair:update(dt)
-    self.pair.bottom:update(dt)
-    self.pair.top:update(dt)
+    if self.x + self.width > 0 then
+        self.pair.bottom:update(dt)
+        self.pair.top:update(dt)
+    else
+        self.remove = true
+    end
 end
 
 function PipePair:render()

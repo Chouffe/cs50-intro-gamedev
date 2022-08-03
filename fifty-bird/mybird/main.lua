@@ -110,7 +110,7 @@ function love.update(dt)
         end
 
         for k, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
-            if pipe_pair.x + pipe_pair.width < 0 then
+            if pipe_pair.remove then
                 table.remove(love.gamestate.entities.pipe_pairs, k)
             end
         end
