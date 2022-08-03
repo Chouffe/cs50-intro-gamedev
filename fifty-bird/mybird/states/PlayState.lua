@@ -97,14 +97,14 @@ function PlayState:render()
         pipe_pair:render()
 
         -- Show hitboxes for debugging
-        local bottom_pipe = pipe_pair.pair.bottom
-        local bottom_coords = bottom_pipe:coords()
-        love.graphics.rectangle('line', bottom_coords.x_start, bottom_coords.y_start, bottom_pipe.width,
-            bottom_pipe.height)
+        -- local bottom_pipe = pipe_pair.pair.bottom
+        -- local bottom_coords = bottom_pipe:coords()
+        -- love.graphics.rectangle('line', bottom_coords.x_start, bottom_coords.y_start, bottom_pipe.width,
+        --     bottom_pipe.height)
 
-        local top_pipe = pipe_pair.pair.top
-        local top_coords = top_pipe:coords()
-        love.graphics.rectangle('line', top_coords.x_start, top_coords.y_start, top_pipe.width, top_pipe.height)
+        -- local top_pipe = pipe_pair.pair.top
+        -- local top_coords = top_pipe:coords()
+        -- love.graphics.rectangle('line', top_coords.x_start, top_coords.y_start, top_pipe.width, top_pipe.height)
     end
 
     self.gamestate.entities.bird:render()
