@@ -13,8 +13,13 @@ function Bird:init()
 end
 
 function Bird:update(dt)
-    self.dy = self.dy + CONFIG.GRAVITY * dt
     self.y = self.y + self.dy
+
+    if love.keyboard.wasPressed('space') then
+        self.dy = self.dy + CONFIG.FLY_FORCE * dt
+    else
+        self.dy = self.dy + CONFIG.GRAVITY_FORCE * dt
+    end
 end
 
 function Bird:render()

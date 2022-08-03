@@ -10,5 +10,6 @@ return {
     ["BACKGROUND_LOOPING_POINT"] = 413,
     ["GROUND_SCROLL_SPEED"] = 60,
     -- Physics
-    ["GRAVITY"] = 20,
+    ["GRAVITY_FORCE"] = 20,
+    ["FLY_FORCE"] = -450,
 }
