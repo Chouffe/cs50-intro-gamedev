@@ -15,7 +15,7 @@
 ]]
 
 -- virtual resolution handling library
-push = require 'push'
+local push = require 'lib/push'
 
 -- physical screen dimensions
 WINDOW_WIDTH = 1280
@@ -26,8 +26,8 @@ VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
 
 -- images we load into memory from files to later draw onto the screen
-local background = love.graphics.newImage('background.png')
-local ground = love.graphics.newImage('ground.png')
+local background = love.graphics.newImage('assets/images/background.png')
+local ground = love.graphics.newImage('assets/images/ground.png')
 
 function love.load()
     -- initialize our nearest-neighbor filter
