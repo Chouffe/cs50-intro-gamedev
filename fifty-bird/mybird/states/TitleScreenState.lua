@@ -20,6 +20,7 @@ function TitleScreenState:update(dt)
 end
 
 function TitleScreenState:render()
+    -- TODO: how do we cleanly thread these assets?
     love.graphics.setFont(love.assets.fonts.flappy)
     love.graphics.printf('Fifty Bird', 0, 64, CONFIG.VIRTUAL_WIDTH, 'center')
 

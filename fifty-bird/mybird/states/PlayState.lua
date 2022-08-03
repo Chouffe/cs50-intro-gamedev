@@ -26,7 +26,9 @@ end
 
 function PlayState:update(dt)
 
-    self.gamestate.entities.bird:update(dt)
+    local bird = self.gamestate.entities.bird
+    bird:update(dt)
+
     self.gamestate.spawn_pipe_timer = self.gamestate.spawn_pipe_timer + dt
 
     if self.gamestate.spawn_pipe_timer > CONFIG.SPAWN_TIMER_DELTA then
@@ -45,6 +47,14 @@ function PlayState:update(dt)
     end
 
     for _, pipe_pair in pairs(self.gamestate.entities.pipe_pairs) do
+        if not pipe_pair.scored then
+            if pipe_pair.x + pipe_pair.width < bird.x then
+                self.gamestate.score = self.gamestate.score + 1
+                pipe_pair.scored = true
+            end
+
+        end
+
         pipe_pair:update(dt)
     end
 
@@ -53,9 +63,6 @@ function PlayState:update(dt)
             table.remove(self.gamestate.entities.pipe_pairs, k)
         end
     end
-
-    -- Collisions
-    local bird = self.gamestate.entities.bird
 
     -- With Ground
     if bird.y + bird.height > CONFIG.VIRTUAL_HEIGHT - CONFIG.GROUND_HEIGHT then
@@ -93,4 +100,9 @@ function PlayState:render()
     end
 
     self.gamestate.entities.bird:render()
+
+    -- Render score
+    love.graphics.setFont(love.assets.fonts.huge)
+    love.graphics.printf(tostring(self.gamestate.score), 10, 10, CONFIG.VIRTUAL_WIDTH, 'left')
+
 end
