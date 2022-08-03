@@ -66,19 +66,22 @@ function PlayState:update(dt)
 
     -- With Ground
     if bird.y + bird.height > CONFIG.VIRTUAL_HEIGHT - CONFIG.GROUND_HEIGHT then
-        gStateMachine:change('title')
+        gStateMachine:change('score', { score = self.gamestate.score })
+        -- gStateMachine:change('title')
     end
 
     -- With Top
     if bird.y < 0 then
-        gStateMachine:change('title')
+        -- gStateMachine:change('title')
+        gStateMachine:change('score', { score = self.gamestate.score })
     end
 
     -- With pipes
     for _, pipe_pair in pairs(self.gamestate.entities.pipe_pairs) do
         for _, pipe in pairs(pipe_pair.pair) do
             if hitbox.collides(pipe:coords(), bird:coords()) then
-                gStateMachine:change('title')
+                -- gStateMachine:change('title')
+                gStateMachine:change('score', { score = self.gamestate.score })
             end
         end
     end

@@ -31,11 +31,13 @@ require 'lib/StateMachine'
 require 'states/BaseState'
 require 'states/PlayState'
 require 'states/TitleScreenState'
+require 'states/ScoreState'
 
 -- Global StateMachine for mode transitions
 gStateMachine = StateMachine {
     ['title'] = function() return TitleScreenState() end,
     ['play'] = function() return PlayState() end,
+    ['score'] = function() return ScoreState() end,
 }
 
 local function reset_keys_pressed()
