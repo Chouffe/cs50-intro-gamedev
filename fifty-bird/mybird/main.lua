@@ -43,6 +43,10 @@ local function get_initial_gamestate()
     }
 end
 
+local function reset_keys_pressed()
+    love.keyboard.keysPressed = {}
+end
+
 function love.load()
     -- Load assets needed for the game in the `love.assets` table
     love.assets = load_assets()
@@ -62,6 +66,8 @@ function love.load()
         fullscreen = false,
         resizable = true
     })
+
+    reset_keys_pressed()
 end
 
 function love.resize(w, h)
@@ -69,6 +75,8 @@ function love.resize(w, h)
 end
 
 function love.keypressed(key)
+    love.keyboard.keysPressed[key] = true
+
     if key == 'escape' then
         love.event.quit()
     end
@@ -84,6 +92,12 @@ function love.update(dt)
         CONFIG.VIRTUAL_WIDTH
 
     love.gamestate.entities.bird:update(dt)
+
+    reset_keys_pressed()
+end
+
+function love.keyboard.wasPressed(key)
+    return love.keyboard.keysPressed[key]
 end
 
 function love.draw()
