@@ -82,6 +82,8 @@ function love.update(dt)
     -- scroll ground by preset speed * dt, looping back to 0 after the screen width passes
     love.gamestate.ground_scroll = (love.gamestate.ground_scroll + CONFIG.GROUND_SCROLL_SPEED * dt) %
         CONFIG.VIRTUAL_WIDTH
+
+    love.gamestate.entities.bird:update(dt)
 end
 
 function love.draw()

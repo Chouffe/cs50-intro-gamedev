@@ -9,4 +9,6 @@ return {
     ["BACKGROUND_SCROLL_SPEED"] = 30,
     ["BACKGROUND_LOOPING_POINT"] = 413,
     ["GROUND_SCROLL_SPEED"] = 60,
+    -- Physics
+    ["GRAVITY"] = 20,
 }

@@ -9,6 +9,12 @@ function Bird:init()
     self.height = self.image:getHeight()
     self.x = (CONFIG.VIRTUAL_WIDTH - self.width) / 2
     self.y = (CONFIG.VIRTUAL_HEIGHT - self.height) / 2
+    self.dy = 0
+end
+
+function Bird:update(dt)
+    self.y = self.y + self.dy * dt
+    self.dy = self.dy + CONFIG.GRAVITY
 end
 
 function Bird:render()
