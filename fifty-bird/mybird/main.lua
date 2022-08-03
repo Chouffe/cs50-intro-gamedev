@@ -115,10 +115,23 @@ function love.update(dt)
             end
         end
 
-        -- Collision detection
+        -- Collisions
+        local bird = love.gamestate.entities.bird
+
+        -- With Ground
+        if bird.y + bird.height > CONFIG.VIRTUAL_HEIGHT - CONFIG.GROUND_HEIGHT then
+            love.gamestate.scrolling = false
+        end
+
+        -- With Top
+        if bird.y < 0 then
+            love.gamestate.scrolling = false
+        end
+
+        -- Collision detection with pipes
         for _, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
             for _, pipe in pairs(pipe_pair.pair) do
-                if hitbox.collides(pipe:coords(), love.gamestate.entities.bird:coords()) then
+                if hitbox.collides(pipe:coords(), bird:coords()) then
                     love.gamestate.scrolling = false
                 end
             end
