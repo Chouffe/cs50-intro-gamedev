@@ -26,7 +26,7 @@ VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
 
 BACKGROUND_SCROLL_SPEED = 30
-BACKGROUND_LOOPING_POINT = 400
+BACKGROUND_LOOPING_POINT = 413
 GROUND_SCROLL_SPEED = 60
 
 local function load_assets()
@@ -79,18 +79,22 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-    love.gamestate.background_scroll = love.gamestate.background_scroll - BACKGROUND_SCROLL_SPEED * dt
-    love.gamestate.ground_scroll = love.gamestate.ground_scroll - GROUND_SCROLL_SPEED * dt
+    -- scroll background by preset speed * dt, looping back to 0 after the looping point
+    love.gamestate.background_scroll = (love.gamestate.background_scroll +
+        BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
+
+    -- scroll ground by preset speed * dt, looping back to 0 after the screen width passes
+    love.gamestate.ground_scroll = (love.gamestate.ground_scroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
 end
 
 function love.draw()
     push:start()
 
     -- draw the background
-    love.graphics.draw(love.assets.images.background, love.gamestate.background_scroll, 0)
+    love.graphics.draw(love.assets.images.background, -love.gamestate.background_scroll, 0)
 
     -- draw the ground on top of the background, toward the bottom of the screen
-    love.graphics.draw(love.assets.images.ground, love.gamestate.ground_scroll, VIRTUAL_HEIGHT - 16)
+    love.graphics.draw(love.assets.images.ground, -love.gamestate.ground_scroll, VIRTUAL_HEIGHT - 16)
 
     push:finish()
 end
