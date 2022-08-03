@@ -18,12 +18,15 @@ function PipePair:init(image, y)
     }
     -- Can the entity be deallocated?
     self.remove = false
+    -- Has this pipe pair been accouted for yet?
+    self.scored = false
 end
 
 function PipePair:update(dt)
     if self.x + self.width > 0 then
         self.pair.bottom:update(dt)
         self.pair.top:update(dt)
+        self.x = self.x - CONFIG.GROUND_SCROLL_SPEED * dt
     else
         self.remove = true
     end
