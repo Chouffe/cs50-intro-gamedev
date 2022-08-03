@@ -20,7 +20,8 @@ local Class = require 'lib/class'
 local CONFIG = require 'config'
 
 require 'entities/Bird'
-require 'entities/Pipe'
+-- require 'entities/Pipe'
+require 'entities/PipePair'
 
 local function load_assets()
     -- images we load into memory from files to later draw onto the screen
@@ -38,7 +39,7 @@ end
 local function get_initial_gamestate()
     return {
         ['entities'] = {
-            ['pipes'] = {},
+            ['pipe_pairs'] = {},
             ['bird'] = Bird(),
         },
         ['background_scroll'] = 0,
@@ -100,17 +101,18 @@ function love.update(dt)
 
     -- MOVE the spawn rate in config
     if love.gamestate.spawn_pipe_timer > 2 then
-        table.insert(love.gamestate.entities.pipes, Pipe())
+        -- TODO: keep track of the last_y
+        table.insert(love.gamestate.entities.pipe_pairs, PipePair(200))
         love.gamestate.spawn_pipe_timer = 0
     end
 
-    for k, pipe in pairs(love.gamestate.entities.pipes) do
-        pipe:update(dt)
+    for k, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
+        pipe_pair:update(dt)
     end
 
-    for k, pipe in pairs(love.gamestate.entities.pipes) do
-        if pipe.x + pipe.width < 0 then
-            table.remove(love.gamestate.entities.pipes, k)
+    for k, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
+        if pipe_pair.x + pipe_pair.width < 0 then
+            table.remove(love.gamestate.entities.pipe_pairs, k)
         end
     end
 
@@ -127,8 +129,8 @@ function love.draw()
     -- draw the background
     love.graphics.draw(love.assets.images.background, -love.gamestate.background_scroll, 0)
 
-    for k, pipe in pairs(love.gamestate.entities.pipes) do
-        pipe:render()
+    for k, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
+        pipe_pair:render()
     end
 
     -- draw the ground on top of the background, toward the bottom of the screen

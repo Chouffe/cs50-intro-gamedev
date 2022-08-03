@@ -3,9 +3,10 @@ local CONFIG = require 'config'
 
 Pipe = Class {}
 
-function Pipe:init()
+function Pipe:init(orientation, y)
+    self.orientation = orientation
     self.x = CONFIG.VIRTUAL_WIDTH
-    self.y = math.random(CONFIG.VIRTUAL_HEIGHT / 4, CONFIG.VIRTUAL_HEIGHT)
+    self.y = y
     self.image = love.assets.images.pipe
     self.width = self.image:getWidth()
     self.height = self.image:getHeight()
@@ -16,5 +17,9 @@ function Pipe:update(dt)
 end
 
 function Pipe:render(dt)
-    love.graphics.draw(self.image, self.x, self.y)
+    if self.orientation == 'top' then
+        love.graphics.draw(self.image, self.x, self.y, 0, 1, -1)
+    elseif self.orientation == 'bottom' then
+        love.graphics.draw(self.image, self.x, self.y)
+    end
 end

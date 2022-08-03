@@ -12,4 +12,6 @@ return {
     -- Physics
     ["GRAVITY_FORCE"] = 20,
     ["FLY_FORCE"] = -450,
+    -- Pipes
+    ["PIPE_GAP"] = 100,
 }
