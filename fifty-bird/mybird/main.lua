@@ -16,24 +16,17 @@
 
 -- virtual resolution handling library
 local push = require 'lib/push'
+local Class = require 'lib/class'
+local CONFIG = require 'config'
 
--- physical screen dimensions
-WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
-
--- virtual resolution dimensions
-VIRTUAL_WIDTH = 512
-VIRTUAL_HEIGHT = 288
-
-BACKGROUND_SCROLL_SPEED = 30
-BACKGROUND_LOOPING_POINT = 413
-GROUND_SCROLL_SPEED = 60
+require 'entities/Bird'
 
 local function load_assets()
     -- images we load into memory from files to later draw onto the screen
     local images = {
         ['background'] = love.graphics.newImage('assets/images/background.png'),
         ['ground'] = love.graphics.newImage('assets/images/ground.png'),
+        ['bird'] = love.graphics.newImage('assets/images/bird.png'),
     }
     return {
         ['images'] = images,
@@ -42,6 +35,9 @@ end
 
 local function get_initial_gamestate()
     return {
+        ['entities'] = {
+            ['bird'] = Bird(),
+        },
         ['background_scroll'] = 0,
         ['ground_scroll'] = 0,
     }
@@ -61,7 +57,7 @@ function love.load()
     love.window.setTitle('Fifty Bird')
 
     -- initialize our virtual resolution
-    push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
+    push:setupScreen(CONFIG.VIRTUAL_WIDTH, CONFIG.VIRTUAL_HEIGHT, CONFIG.WINDOW_WIDTH, CONFIG.WINDOW_HEIGHT, {
         vsync = true,
         fullscreen = false,
         resizable = true
@@ -81,10 +77,11 @@ end
 function love.update(dt)
     -- scroll background by preset speed * dt, looping back to 0 after the looping point
     love.gamestate.background_scroll = (love.gamestate.background_scroll +
-        BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
+        CONFIG.BACKGROUND_SCROLL_SPEED * dt) % CONFIG.BACKGROUND_LOOPING_POINT
 
     -- scroll ground by preset speed * dt, looping back to 0 after the screen width passes
-    love.gamestate.ground_scroll = (love.gamestate.ground_scroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
+    love.gamestate.ground_scroll = (love.gamestate.ground_scroll + CONFIG.GROUND_SCROLL_SPEED * dt) %
+        CONFIG.VIRTUAL_WIDTH
 end
 
 function love.draw()
@@ -94,7 +91,9 @@ function love.draw()
     love.graphics.draw(love.assets.images.background, -love.gamestate.background_scroll, 0)
 
     -- draw the ground on top of the background, toward the bottom of the screen
-    love.graphics.draw(love.assets.images.ground, -love.gamestate.ground_scroll, VIRTUAL_HEIGHT - 16)
+    love.graphics.draw(love.assets.images.ground, -love.gamestate.ground_scroll, CONFIG.VIRTUAL_HEIGHT - 16)
+
+    love.gamestate.entities.bird:render()
 
     push:finish()
 end
