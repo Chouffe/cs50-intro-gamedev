@@ -20,7 +20,6 @@ local Class = require 'lib/class'
 local CONFIG = require 'config'
 
 require 'entities/Bird'
--- require 'entities/Pipe'
 require 'entities/PipePair'
 
 local function load_assets()
@@ -36,12 +35,12 @@ local function load_assets()
     }
 end
 
-local function get_initial_gamestate()
+local function get_initial_gamestate(assets)
     return {
         ['last_y'] = 200,
         ['entities'] = {
             ['pipe_pairs'] = {},
-            ['bird'] = Bird(),
+            ['bird'] = Bird(assets.images.bird),
         },
         ['background_scroll'] = 0,
         ['ground_scroll'] = 0,
@@ -58,7 +57,8 @@ function love.load()
     love.assets = load_assets()
 
     -- Load the gamestate
-    love.gamestate = get_initial_gamestate()
+    -- love.gamestate = gamestate.get_initial_gamestate()
+    love.gamestate = get_initial_gamestate(love.assets)
 
     -- initialize our nearest-neighbor filter
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -103,7 +103,7 @@ function love.update(dt)
     -- MOVE the spawn rate in config
     if love.gamestate.spawn_pipe_timer > 2 then
         -- TODO: keep track of the last_y
-        table.insert(love.gamestate.entities.pipe_pairs, PipePair(love.gamestate.last_y))
+        table.insert(love.gamestate.entities.pipe_pairs, PipePair(love.assets.images.pipe, love.gamestate.last_y))
         love.gamestate.spawn_pipe_timer = 0
     end
 

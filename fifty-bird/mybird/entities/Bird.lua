@@ -3,8 +3,8 @@ local CONFIG = require 'config'
 
 Bird = Class {}
 
-function Bird:init()
-    self.image = love.assets.images.bird
+function Bird:init(image)
+    self.image = image
     self.width = self.image:getWidth()
     self.height = self.image:getHeight()
     self.x = (CONFIG.VIRTUAL_WIDTH - self.width) / 2

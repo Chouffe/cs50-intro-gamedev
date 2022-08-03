@@ -3,11 +3,11 @@ local CONFIG = require 'config'
 
 Pipe = Class {}
 
-function Pipe:init(orientation, y)
+function Pipe:init(image, orientation, y)
     self.orientation = orientation
     self.x = CONFIG.VIRTUAL_WIDTH
     self.y = y
-    self.image = love.assets.images.pipe
+    self.image = image
     self.width = self.image:getWidth()
     self.height = self.image:getHeight()
 end
