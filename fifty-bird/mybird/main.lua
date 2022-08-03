@@ -32,6 +32,12 @@ require 'states/BaseState'
 require 'states/PlayState'
 require 'states/TitleScreenState'
 
+-- Global StateMachine for mode transitions
+gStateMachine = StateMachine {
+    ['title'] = function() return TitleScreenState() end,
+    ['play'] = function() return PlayState() end,
+}
+
 local function reset_keys_pressed()
     love.keyboard.keysPressed = {}
 end
@@ -53,17 +59,19 @@ function love.load()
     love.window.setTitle('Fifty Bird')
 
     -- initialize our virtual resolution
-    push:setupScreen(CONFIG.VIRTUAL_WIDTH, CONFIG.VIRTUAL_HEIGHT, CONFIG.WINDOW_WIDTH, CONFIG.WINDOW_HEIGHT, {
-        vsync = true,
-        fullscreen = false,
-        resizable = true
-    })
+    push:setupScreen(
+        CONFIG.VIRTUAL_WIDTH,
+        CONFIG.VIRTUAL_HEIGHT,
+        CONFIG.WINDOW_WIDTH,
+        CONFIG.WINDOW_HEIGHT,
+        {
+            vsync = true,
+            fullscreen = false,
+            resizable = true
+        }
+    )
 
-    -- TODO: move it to gamestate
-    gStateMachine = StateMachine {
-        ['title'] = function() return TitleScreenState() end,
-        ['play'] = function() return PlayState() end,
-    }
+    -- Start with the title screen
     gStateMachine:change('title')
 
     reset_keys_pressed()
