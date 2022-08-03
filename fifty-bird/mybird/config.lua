@@ -14,4 +14,9 @@ return {
     ["FLY_FORCE"] = -450,
     -- Pipes
     ["PIPE_GAP"] = 100,
+    -- Scene Rendering
+    ["GROUND_HEIGHT"] = 16,
+    -- GamePlay
+    ["PIPE_HEIGHT_MAX_VARIATION"] = 25,
+    ["SPAWN_TIMER_DELTA"] = 3,
 }

@@ -88,10 +88,10 @@ function love.update(dt)
     love.gamestate.entities.bird:update(dt)
     love.gamestate.spawn_pipe_timer = love.gamestate.spawn_pipe_timer + dt
 
-    if love.gamestate.spawn_pipe_timer > 2 then
+    if love.gamestate.spawn_pipe_timer > CONFIG.SPAWN_TIMER_DELTA then
         local pipe_pair_y = util_math.clamp(
-            love.gamestate.last_y + math.random(-25, 25),
-            15,
+            love.gamestate.last_y + math.random(-CONFIG.PIPE_HEIGHT_MAX_VARIATION, CONFIG.PIPE_HEIGHT_MAX_VARIATION),
+            CONFIG.GROUND_HEIGHT,
             CONFIG.VIRTUAL_HEIGHT
         )
         table.insert(
@@ -130,7 +130,8 @@ function love.draw()
     end
 
     -- draw the ground on top of the background, toward the bottom of the screen
-    love.graphics.draw(love.assets.images.ground, -love.gamestate.ground_scroll, CONFIG.VIRTUAL_HEIGHT - 16)
+    love.graphics.draw(love.assets.images.ground, -love.gamestate.ground_scroll,
+        CONFIG.VIRTUAL_HEIGHT - CONFIG.GROUND_HEIGHT)
 
     love.gamestate.entities.bird:render()
 
