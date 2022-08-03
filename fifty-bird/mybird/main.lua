@@ -25,11 +25,35 @@ WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
 
--- images we load into memory from files to later draw onto the screen
-local background = love.graphics.newImage('assets/images/background.png')
-local ground = love.graphics.newImage('assets/images/ground.png')
+BACKGROUND_SCROLL_SPEED = 30
+BACKGROUND_LOOPING_POINT = 400
+GROUND_SCROLL_SPEED = 60
+
+local function load_assets()
+    -- images we load into memory from files to later draw onto the screen
+    local images = {
+        ['background'] = love.graphics.newImage('assets/images/background.png'),
+        ['ground'] = love.graphics.newImage('assets/images/ground.png'),
+    }
+    return {
+        ['images'] = images,
+    }
+end
+
+local function get_initial_gamestate()
+    return {
+        ['background_scroll'] = 0,
+        ['ground_scroll'] = 0,
+    }
+end
 
 function love.load()
+    -- Load assets needed for the game in the `love.assets` table
+    love.assets = load_assets()
+
+    -- Load the gamestate
+    love.gamestate = get_initial_gamestate()
+
     -- initialize our nearest-neighbor filter
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
@@ -54,14 +78,19 @@ function love.keypressed(key)
     end
 end
 
+function love.update(dt)
+    love.gamestate.background_scroll = love.gamestate.background_scroll - BACKGROUND_SCROLL_SPEED * dt
+    love.gamestate.ground_scroll = love.gamestate.ground_scroll - GROUND_SCROLL_SPEED * dt
+end
+
 function love.draw()
     push:start()
 
-    -- draw the background starting at top left (0, 0)
-    love.graphics.draw(background, 0, 0)
+    -- draw the background
+    love.graphics.draw(love.assets.images.background, love.gamestate.background_scroll, 0)
 
     -- draw the ground on top of the background, toward the bottom of the screen
-    love.graphics.draw(ground, 0, VIRTUAL_HEIGHT - 16)
+    love.graphics.draw(love.assets.images.ground, love.gamestate.ground_scroll, VIRTUAL_HEIGHT - 16)
 
     push:finish()
 end
