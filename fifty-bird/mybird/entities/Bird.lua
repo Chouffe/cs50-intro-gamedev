@@ -13,8 +13,8 @@ function Bird:init()
 end
 
 function Bird:update(dt)
-    self.y = self.y + self.dy * dt
-    self.dy = self.dy + CONFIG.GRAVITY
+    self.dy = self.dy + CONFIG.GRAVITY * dt
+    self.y = self.y + self.dy
 end
 
 function Bird:render()
