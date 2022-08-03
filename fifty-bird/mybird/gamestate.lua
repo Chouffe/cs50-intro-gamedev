@@ -7,7 +7,7 @@ local function get_initial_gamestate(assets)
         ['last_y'] = 200,
         ['entities'] = {
             ['pipe_pairs'] = {},
-            ['bird'] = Bird(assets.images.bird),
+            ['bird'] = Bird(assets.images.bird, assets.sounds.jump),
         },
         ['background_scroll'] = 0,
         ['ground_scroll'] = 0,

@@ -3,8 +3,9 @@ local CONFIG = require 'config'
 
 Bird = Class {}
 
-function Bird:init(image)
+function Bird:init(image, jump_sound)
     self.image = image
+    self.jump_sound = jump_sound
     self.width = self.image:getWidth()
     self.height = self.image:getHeight()
     self.x = (CONFIG.VIRTUAL_WIDTH - self.width) / 2
@@ -17,6 +18,7 @@ function Bird:update(dt)
 
     if love.keyboard.wasPressed('space') then
         self.dy = self.dy + CONFIG.FLY_FORCE * dt
+        self.jump_sound:play()
     else
         self.dy = self.dy + CONFIG.GRAVITY_FORCE * dt
     end

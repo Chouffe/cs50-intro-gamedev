@@ -7,6 +7,14 @@ local function load_images()
     }
 end
 
+local function load_sounds()
+    return {
+        ['jump'] = love.audio.newSource('assets/sounds/jump.wav', 'static'),
+        ['score'] = love.audio.newSource('assets/sounds/score.wav', 'static'),
+        ['hurt'] = love.audio.newSource('assets/sounds/hurt.wav', 'static'),
+    }
+end
+
 local function load_fonts()
     return {
         ['small'] = love.graphics.newFont('assets/fonts/font.ttf', 8),
@@ -20,6 +28,7 @@ local function load_assets()
     return {
         ['fonts'] = load_fonts(),
         ['images'] = load_images(),
+        ['sounds'] = load_sounds(),
     }
 end
 
