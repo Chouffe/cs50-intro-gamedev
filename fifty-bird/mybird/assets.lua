@@ -12,6 +12,8 @@ local function load_sounds()
         ['jump'] = love.audio.newSource('assets/sounds/jump.wav', 'static'),
         ['score'] = love.audio.newSource('assets/sounds/score.wav', 'static'),
         ['hurt'] = love.audio.newSource('assets/sounds/hurt.wav', 'static'),
+        ['explosion'] = love.audio.newSource('assets/sounds/explosion.wav', 'static'),
+        ['music'] = love.audio.newSource('assets/sounds/marios_way.mp3', 'static')
     }
 end
 

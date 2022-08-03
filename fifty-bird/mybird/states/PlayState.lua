@@ -74,12 +74,14 @@ function PlayState:update(dt)
     if bird.y + bird.height > CONFIG.VIRTUAL_HEIGHT - CONFIG.GROUND_HEIGHT then
         gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
         self.assets.sounds.hurt:play()
+        self.assets.sounds.explosion:play()
     end
 
     -- With Top
     if bird.y < 0 then
         gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
         self.assets.sounds.hurt:play()
+        self.assets.sounds.explosion:play()
     end
 
     -- With pipes
@@ -88,6 +90,7 @@ function PlayState:update(dt)
             if hitbox.collides(pipe:coords(), bird:coords()) then
                 gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
                 self.assets.sounds.hurt:play()
+                self.assets.sounds.explosion:play()
             end
         end
     end

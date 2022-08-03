@@ -61,6 +61,10 @@ function love.load()
     -- app window title
     love.window.setTitle('Fifty Bird')
 
+    -- Start music in a loop
+    loaded_assets.sounds.music:setLooping(true)
+    loaded_assets.sounds.music:play()
+
     -- initialize our virtual resolution
     push:setupScreen(
         CONFIG.VIRTUAL_WIDTH,
