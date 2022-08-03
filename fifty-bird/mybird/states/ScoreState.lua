@@ -9,11 +9,12 @@ ScoreState = Class { __includes = BaseState }
 
 function ScoreState:enter(params)
     self.score = params.score
+    self.assets = params.assets
 end
 
 function ScoreState:update(_)
     if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
-        gStateMachine:change('play')
+        gStateMachine:change('countdown', { assets = self.assets })
     end
 end
 

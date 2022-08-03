@@ -21,7 +21,12 @@ PlayState = Class { __includes = BaseState }
 function PlayState:init()
     -- Load the gamestate
     -- TODO: how can we thread the assets properly here instead of relying on global variables?
-    self.gamestate = gamestate.get_initial_gamestate(love.assets)
+    -- self.gamestate = gamestate.get_initial_gamestate(love.assets)
+end
+
+function PlayState:enter(params)
+    self.assets = params.assets
+    self.gamestate = gamestate.get_initial_gamestate(self.assets)
 end
 
 function PlayState:update(dt)
@@ -66,14 +71,14 @@ function PlayState:update(dt)
 
     -- With Ground
     if bird.y + bird.height > CONFIG.VIRTUAL_HEIGHT - CONFIG.GROUND_HEIGHT then
-        gStateMachine:change('score', { score = self.gamestate.score })
+        gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
         -- gStateMachine:change('title')
     end
 
     -- With Top
     if bird.y < 0 then
         -- gStateMachine:change('title')
-        gStateMachine:change('score', { score = self.gamestate.score })
+        gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
     end
 
     -- With pipes
@@ -81,7 +86,7 @@ function PlayState:update(dt)
         for _, pipe in pairs(pipe_pair.pair) do
             if hitbox.collides(pipe:coords(), bird:coords()) then
                 -- gStateMachine:change('title')
-                gStateMachine:change('score', { score = self.gamestate.score })
+                gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
             end
         end
     end
@@ -105,7 +110,7 @@ function PlayState:render()
     self.gamestate.entities.bird:render()
 
     -- Render score
-    love.graphics.setFont(love.assets.fonts.huge)
-    love.graphics.printf(tostring(self.gamestate.score), 10, 10, CONFIG.VIRTUAL_WIDTH, 'left')
+    love.graphics.setFont(love.assets.fonts.medium)
+    love.graphics.printf("Score: " .. tostring(self.gamestate.score), 10, 10, CONFIG.VIRTUAL_WIDTH, 'left')
 
 end

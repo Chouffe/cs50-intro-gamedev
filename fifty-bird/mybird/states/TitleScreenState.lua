@@ -13,9 +13,13 @@ local CONFIG = require 'config'
 
 TitleScreenState = Class { __includes = BaseState }
 
-function TitleScreenState:update(dt)
+function TitleScreenState:enter(params)
+    self.assets = params.assets
+end
+
+function TitleScreenState:update(_)
     if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
-        gStateMachine:change('play')
+        gStateMachine:change('countdown', { assets = self.assets })
     end
 end
 

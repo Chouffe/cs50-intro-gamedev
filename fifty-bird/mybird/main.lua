@@ -19,8 +19,6 @@ local push = require 'lib/push'
 local Class = require 'lib/class'
 local CONFIG = require 'config'
 local gamestate = require 'gamestate'
-local util_math = require 'util/math'
-local hitbox = require 'hitbox'
 local assets = require 'assets'
 
 require 'entities/Bird'
@@ -32,12 +30,14 @@ require 'states/BaseState'
 require 'states/PlayState'
 require 'states/TitleScreenState'
 require 'states/ScoreState'
+require 'states/CountDownState'
 
 -- Global StateMachine for mode transitions
 gStateMachine = StateMachine {
     ['title'] = function() return TitleScreenState() end,
     ['play'] = function() return PlayState() end,
     ['score'] = function() return ScoreState() end,
+    ['countdown'] = function() return CountDownState() end,
 }
 
 local function reset_keys_pressed()
@@ -47,15 +47,16 @@ end
 function love.load()
     -- Load assets needed for the game in the `love.assets` table
     love.assets = assets.load()
+    local loaded_assets = assets.load()
 
     -- Load the gamestate
-    love.gamestate = gamestate.get_initial_gamestate(love.assets)
+    love.gamestate = gamestate.get_initial_gamestate(loaded_assets)
 
     -- initialize our nearest-neighbor filter
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
     -- initialize default font
-    love.graphics.setFont(love.assets.fonts.flappy)
+    love.graphics.setFont(loaded_assets.fonts.flappy)
 
     -- app window title
     love.window.setTitle('Fifty Bird')
@@ -74,7 +75,7 @@ function love.load()
     )
 
     -- Start with the title screen
-    gStateMachine:change('title')
+    gStateMachine:change('title', { assets = loaded_assets })
 
     reset_keys_pressed()
 end
@@ -96,6 +97,7 @@ function love.update(dt)
     -- now, we just update the state machine, which defers to the right state
     gStateMachine:update(dt)
 
+    -- Should be move to all gamestate instead so that we can get rid of the love.gamestate dep
     -- scroll background by preset speed * dt, looping back to 0 after the looping point
     love.gamestate.background_scroll = (love.gamestate.background_scroll +
         CONFIG.BACKGROUND_SCROLL_SPEED * dt) % CONFIG.BACKGROUND_LOOPING_POINT
@@ -114,6 +116,7 @@ end
 function love.draw()
     push:start()
 
+    -- Should be moved to all screens instead so that we can get rid of the love.assets dep
     -- draw the background
     love.graphics.draw(love.assets.images.background, -love.gamestate.background_scroll, 0)
 
