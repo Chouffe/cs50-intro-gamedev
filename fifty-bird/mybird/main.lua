@@ -108,6 +108,12 @@ function love.update(dt)
         pipe:update(dt)
     end
 
+    for k, pipe in pairs(love.gamestate.entities.pipes) do
+        if pipe.x + pipe.width < 0 then
+            table.remove(love.gamestate.entities.pipes, k)
+        end
+    end
+
     reset_keys_pressed()
 end
 
