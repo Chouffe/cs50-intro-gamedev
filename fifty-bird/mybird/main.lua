@@ -20,6 +20,7 @@ local Class = require 'lib/class'
 local CONFIG = require 'config'
 local gamestate = require 'gamestate'
 local util_math = require 'util/math'
+local hitbox = require 'hitbox'
 
 require 'entities/Bird'
 require 'entities/PipePair'
@@ -77,38 +78,50 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-    -- scroll background by preset speed * dt, looping back to 0 after the looping point
-    love.gamestate.background_scroll = (love.gamestate.background_scroll +
-        CONFIG.BACKGROUND_SCROLL_SPEED * dt) % CONFIG.BACKGROUND_LOOPING_POINT
+    if love.gamestate.scrolling then
+        -- scroll background by preset speed * dt, looping back to 0 after the looping point
+        love.gamestate.background_scroll = (love.gamestate.background_scroll +
+            CONFIG.BACKGROUND_SCROLL_SPEED * dt) % CONFIG.BACKGROUND_LOOPING_POINT
 
-    -- scroll ground by preset speed * dt, looping back to 0 after the screen width passes
-    love.gamestate.ground_scroll = (love.gamestate.ground_scroll + CONFIG.GROUND_SCROLL_SPEED * dt) %
-        CONFIG.VIRTUAL_WIDTH
+        -- scroll ground by preset speed * dt, looping back to 0 after the screen width passes
+        love.gamestate.ground_scroll = (love.gamestate.ground_scroll + CONFIG.GROUND_SCROLL_SPEED * dt) %
+            CONFIG.VIRTUAL_WIDTH
 
-    love.gamestate.entities.bird:update(dt)
-    love.gamestate.spawn_pipe_timer = love.gamestate.spawn_pipe_timer + dt
+        love.gamestate.entities.bird:update(dt)
+        love.gamestate.spawn_pipe_timer = love.gamestate.spawn_pipe_timer + dt
 
-    if love.gamestate.spawn_pipe_timer > CONFIG.SPAWN_TIMER_DELTA then
-        local pipe_pair_y = util_math.clamp(
-            love.gamestate.last_y + math.random(-CONFIG.PIPE_HEIGHT_MAX_VARIATION, CONFIG.PIPE_HEIGHT_MAX_VARIATION),
-            CONFIG.GROUND_HEIGHT,
-            CONFIG.VIRTUAL_HEIGHT
-        )
-        table.insert(
-            love.gamestate.entities.pipe_pairs,
-            PipePair(love.assets.images.pipe, pipe_pair_y)
-        )
-        love.gamestate.last_y = pipe_pair_y
-        love.gamestate.spawn_pipe_timer = 0
-    end
+        if love.gamestate.spawn_pipe_timer > CONFIG.SPAWN_TIMER_DELTA then
+            local pipe_pair_y = util_math.clamp(
+                love.gamestate.last_y + math.random(-CONFIG.PIPE_HEIGHT_MAX_VARIATION, CONFIG.PIPE_HEIGHT_MAX_VARIATION)
+                ,
+                CONFIG.GROUND_HEIGHT,
+                CONFIG.VIRTUAL_HEIGHT
+            )
+            table.insert(
+                love.gamestate.entities.pipe_pairs,
+                PipePair(love.assets.images.pipe, pipe_pair_y)
+            )
+            love.gamestate.last_y = pipe_pair_y
+            love.gamestate.spawn_pipe_timer = 0
+        end
 
-    for k, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
-        pipe_pair:update(dt)
-    end
+        for _, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
+            pipe_pair:update(dt)
+        end
 
-    for k, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
-        if pipe_pair.x + pipe_pair.width < 0 then
-            table.remove(love.gamestate.entities.pipe_pairs, k)
+        for k, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
+            if pipe_pair.x + pipe_pair.width < 0 then
+                table.remove(love.gamestate.entities.pipe_pairs, k)
+            end
+        end
+
+        -- Collision detection
+        for _, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
+            for _, pipe in pairs(pipe_pair.pair) do
+                if hitbox.collides(pipe:coords(), love.gamestate.entities.bird:coords()) then
+                    love.gamestate.scrolling = false
+                end
+            end
         end
     end
 
@@ -125,15 +138,25 @@ function love.draw()
     -- draw the background
     love.graphics.draw(love.assets.images.background, -love.gamestate.background_scroll, 0)
 
-    for k, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
+    for _, pipe_pair in pairs(love.gamestate.entities.pipe_pairs) do
         pipe_pair:render()
+
+        -- Show hitboxes for debugging
+        local bottom_pipe = pipe_pair.pair.bottom
+        local bottom_coords = bottom_pipe:coords()
+        love.graphics.rectangle('line', bottom_coords.x_start, bottom_coords.y_start, bottom_pipe.width,
+            bottom_pipe.height)
+
+        local top_pipe = pipe_pair.pair.top
+        local top_coords = top_pipe:coords()
+        love.graphics.rectangle('line', top_coords.x_start, top_coords.y_start, top_pipe.width, top_pipe.height)
     end
+
+    love.gamestate.entities.bird:render()
 
     -- draw the ground on top of the background, toward the bottom of the screen
     love.graphics.draw(love.assets.images.ground, -love.gamestate.ground_scroll,
         CONFIG.VIRTUAL_HEIGHT - CONFIG.GROUND_HEIGHT)
-
-    love.gamestate.entities.bird:render()
 
     push:finish()
 end

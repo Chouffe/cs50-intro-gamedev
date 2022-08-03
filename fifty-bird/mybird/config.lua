@@ -13,7 +13,7 @@ return {
     ["GRAVITY_FORCE"] = 20,
     ["FLY_FORCE"] = -450,
     -- Pipes
-    ["PIPE_GAP"] = 100,
+    ["PIPE_GAP"] = 150,
     -- Scene Rendering
     ["GROUND_HEIGHT"] = 16,
     -- GamePlay

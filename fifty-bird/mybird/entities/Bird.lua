@@ -25,3 +25,12 @@ end
 function Bird:render()
     love.graphics.draw(self.image, self.x, self.y)
 end
+
+function Bird:coords()
+    return {
+        ["x_start"] = self.x,
+        ["x_end"] = self.x + self.width,
+        ["y_start"] = self.y,
+        ["y_end"] = self.y + self.width,
+    }
+end
