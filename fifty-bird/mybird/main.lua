@@ -38,6 +38,7 @@ end
 
 local function get_initial_gamestate()
     return {
+        ['last_y'] = 200,
         ['entities'] = {
             ['pipe_pairs'] = {},
             ['bird'] = Bird(),
@@ -102,7 +103,7 @@ function love.update(dt)
     -- MOVE the spawn rate in config
     if love.gamestate.spawn_pipe_timer > 2 then
         -- TODO: keep track of the last_y
-        table.insert(love.gamestate.entities.pipe_pairs, PipePair(200))
+        table.insert(love.gamestate.entities.pipe_pairs, PipePair(love.gamestate.last_y))
         love.gamestate.spawn_pipe_timer = 0
     end
 

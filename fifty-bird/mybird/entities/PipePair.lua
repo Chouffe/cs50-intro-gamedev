@@ -12,7 +12,7 @@ function PipePair:init(last_y)
     self.image = love.assets.images.pipe
     self.height = self.image:getHeight()
     self.width = self.image:getWidth()
-    bottom_y = util_math.clamp(last_y + math.random(-25, 25), 15, CONFIG.VIRTUAL_HEIGHT - CONFIG.PIPE_GAP - 15)
+    local bottom_y = util_math.clamp(last_y + math.random(-25, 25), 15, CONFIG.VIRTUAL_HEIGHT)
     self.pair = {
         ['bottom'] = Pipe('bottom', bottom_y),
         ['top'] = Pipe('top', bottom_y - CONFIG.PIPE_GAP),
