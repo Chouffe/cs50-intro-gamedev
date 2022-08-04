@@ -2,8 +2,9 @@ require 'entities/Bird'
 
 local function get_initial_gamestate(assets)
     return {
+        ['debug'] = false,
         ['score'] = 0,
-        ['scrolling'] = true,
+        ['pause'] = false,
         ['last_y'] = 200,
         ['entities'] = {
             ['pipe_pairs'] = {},

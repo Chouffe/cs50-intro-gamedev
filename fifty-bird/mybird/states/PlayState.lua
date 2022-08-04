@@ -31,69 +31,98 @@ end
 
 function PlayState:update(dt)
 
-    local bird = self.gamestate.entities.bird
-    bird:update(dt)
-
-    self.gamestate.spawn_pipe_timer = self.gamestate.spawn_pipe_timer + dt
-
-    if self.gamestate.spawn_pipe_timer > CONFIG.SPAWN_TIMER_DELTA then
-        local pipe_pair_y = util_math.clamp(
-            self.gamestate.last_y + math.random(-CONFIG.PIPE_HEIGHT_MAX_VARIATION, CONFIG.PIPE_HEIGHT_MAX_VARIATION)
-            ,
-            CONFIG.GROUND_HEIGHT,
-            CONFIG.VIRTUAL_HEIGHT
-        )
-        table.insert(
-            self.gamestate.entities.pipe_pairs,
-            PipePair(love.assets.images.pipe, pipe_pair_y)
-        )
-        self.gamestate.last_y = pipe_pair_y
-        self.gamestate.spawn_pipe_timer = 0
+    if love.keyboard.wasPressed('d') then
+        self.gamestate.debug = not self.gamestate.debug
     end
 
-    for _, pipe_pair in pairs(self.gamestate.entities.pipe_pairs) do
-        if not pipe_pair.scored then
-            if pipe_pair.x + pipe_pair.width < bird.x then
-                self.gamestate.score = self.gamestate.score + 1
-                self.assets.sounds.score:play()
-                pipe_pair.scored = true
+    if love.keyboard.wasPressed('p') then
+        if self.gamestate.pause then
+            love.audio.play(self.assets.sounds.music)
+        end
+        self.gamestate.pause = not self.gamestate.pause
+    end
+
+    if self.gamestate.pause then
+
+        -- Compensate for the parallax scrolling
+        love.gamestate.background_scroll = (love.gamestate.background_scroll -
+            CONFIG.BACKGROUND_SCROLL_SPEED * dt) % CONFIG.BACKGROUND_LOOPING_POINT
+
+        -- scroll ground by preset speed * dt, looping back to 0 after the screen width passes
+        love.gamestate.ground_scroll = (love.gamestate.ground_scroll - CONFIG.GROUND_SCROLL_SPEED * dt) %
+            CONFIG.VIRTUAL_WIDTH
+    else
+        local bird = self.gamestate.entities.bird
+        bird:update(dt)
+
+        self.gamestate.spawn_pipe_timer = self.gamestate.spawn_pipe_timer + dt
+
+        if self.gamestate.spawn_pipe_timer > CONFIG.SPAWN_TIMER_DELTA then
+            local pipe_pair_y = util_math.clamp(
+                self.gamestate.last_y + math.random(-CONFIG.PIPE_HEIGHT_MAX_VARIATION, CONFIG.PIPE_HEIGHT_MAX_VARIATION)
+                ,
+                CONFIG.GROUND_HEIGHT,
+                CONFIG.VIRTUAL_HEIGHT
+            )
+            table.insert(
+                self.gamestate.entities.pipe_pairs,
+                PipePair(self.assets.images.pipe, pipe_pair_y)
+            )
+            self.gamestate.last_y = pipe_pair_y
+            self.gamestate.spawn_pipe_timer = 0
+        end
+
+        for _, pipe_pair in pairs(self.gamestate.entities.pipe_pairs) do
+            if not pipe_pair.scored then
+                if pipe_pair.x + pipe_pair.width < bird.x then
+                    self.gamestate.score = self.gamestate.score + 1
+                    self.assets.sounds.score:play()
+                    pipe_pair.scored = true
+                end
+
             end
 
+            pipe_pair:update(dt)
         end
 
-        pipe_pair:update(dt)
-    end
-
-    for k, pipe_pair in pairs(self.gamestate.entities.pipe_pairs) do
-        if pipe_pair.remove then
-            table.remove(self.gamestate.entities.pipe_pairs, k)
+        for k, pipe_pair in pairs(self.gamestate.entities.pipe_pairs) do
+            if pipe_pair.remove then
+                table.remove(self.gamestate.entities.pipe_pairs, k)
+            end
         end
-    end
 
-    -- With Ground
-    if bird.y + bird.height > CONFIG.VIRTUAL_HEIGHT - CONFIG.GROUND_HEIGHT then
-        gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
-        self.assets.sounds.hurt:play()
-        self.assets.sounds.explosion:play()
-    end
+        -- With Ground
+        if bird.y + bird.height > CONFIG.VIRTUAL_HEIGHT - CONFIG.GROUND_HEIGHT then
+            gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
+            self.assets.sounds.hurt:play()
+            self.assets.sounds.explosion:play()
+        end
 
-    -- With Top
-    if bird.y < 0 then
-        gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
-        self.assets.sounds.hurt:play()
-        self.assets.sounds.explosion:play()
-    end
+        -- With Top
+        if bird.y < 0 then
+            gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
+            self.assets.sounds.hurt:play()
+            self.assets.sounds.explosion:play()
+        end
 
-    -- With pipes
-    for _, pipe_pair in pairs(self.gamestate.entities.pipe_pairs) do
-        for _, pipe in pairs(pipe_pair.pair) do
-            if hitbox.collides(pipe:coords(), bird:coords()) then
-                gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
-                self.assets.sounds.hurt:play()
-                self.assets.sounds.explosion:play()
+        -- With pipes
+        for _, pipe_pair in pairs(self.gamestate.entities.pipe_pairs) do
+            for _, pipe in pairs(pipe_pair.pair) do
+                if hitbox.collides(pipe:coords(), bird:coords()) then
+                    gStateMachine:change('score', { assets = self.assets, score = self.gamestate.score })
+                    self.assets.sounds.hurt:play()
+                    self.assets.sounds.explosion:play()
+                end
             end
         end
     end
+end
+
+local function displayFPS(font)
+    -- simple FPS display across all states
+    love.graphics.setFont(font)
+    love.graphics.setColor(0, 255 / 255, 0, 255 / 255)
+    love.graphics.printf('FPS: ' .. tostring(love.timer.getFPS()), 10, 10, CONFIG.VIRTUAL_WIDTH - 20, 'right')
 end
 
 function PlayState:render()
@@ -114,7 +143,23 @@ function PlayState:render()
     self.gamestate.entities.bird:render()
 
     -- Render score
-    love.graphics.setFont(love.assets.fonts.medium)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setFont(self.assets.fonts.medium)
     love.graphics.printf("Score: " .. tostring(self.gamestate.score), 10, 10, CONFIG.VIRTUAL_WIDTH, 'left')
+
+    if self.gamestate.debug then
+        displayFPS(self.assets.fonts.small)
+    end
+
+    if self.gamestate.pause then
+        love.audio.pause(self.assets.sounds.music)
+        love.graphics.setColor(1, 1, 1, 1)
+
+        love.graphics.setFont(self.assets.fonts.flappy)
+        love.graphics.printf('Game paused', 0, 64, CONFIG.VIRTUAL_WIDTH, 'center')
+
+        love.graphics.setFont(self.assets.fonts.medium)
+        love.graphics.printf('Press p to resume', 0, 96, CONFIG.VIRTUAL_WIDTH, 'center')
+    end
 
 end

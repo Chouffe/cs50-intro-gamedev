@@ -126,6 +126,8 @@ function love.draw()
 
     gStateMachine:render()
 
+    love.graphics.setColor(1, 1, 1, 1)
+
     -- draw the ground on top of the background, toward the bottom of the screen
     love.graphics.draw(love.assets.images.ground, -love.gamestate.ground_scroll,
         CONFIG.VIRTUAL_HEIGHT - CONFIG.GROUND_HEIGHT)
